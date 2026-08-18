@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FUELSOFT | Milenium Gasolineras</title>
+    
+    <!-- Fonts: Inter & Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- QRCode JS for mobile access QR modal -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        milenium: {
+                            orange: '#ED5112',       /* Naranja Milenium Principal */
+                            orangeDark: '#E04010',   /* Naranja Oscuro Hover */
+                            orangeLight: '#F05A18',  /* Naranja Claro Highlight */
+                            black: '#000000',        /* Fondo Negro */
+                            white: '#FFFFFF',        /* Texto Blanco */
+                            darkGray: '#222222',     /* Contenedores y Tarjetas */
+                            lightGray: '#E5E5E5'     /* Separadores y Texto Secundario */
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Outfit', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Smooth transitions for interactive elements */
+        * {
+            transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+        }
+
+        /* Milenium Brand Accent Bar */
+        .milenium-brand-bar {
+            background: linear-gradient(90deg, #ED5112 0%, #F05A18 50%, #E04010 100%);
+            height: 4px;
+        }
+
+        /* Station Card Hover Dynamics */
+        .station-card {
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .station-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 25px -5px rgba(237, 81, 18, 0.35);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #000000;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #222222;
+            border: 1px solid #ED5112;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #ED5112;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex flex-col justify-between bg-milenium-black text-milenium-white selection:bg-milenium-orange selection:text-white antialiased">
+
+    <!-- Top Brand Colored Accent Line -->
+    <div class="milenium-brand-bar w-full"></div>
+
+    <header class="bg-milenium-darkGray border-b border-milenium-darkGray sticky top-0 z-40 shadow-lg">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap items-center justify-between gap-4">
+            
+            <!-- Logos Container -->
+            <div class="flex items-center gap-3 sm:gap-6">
+                <!-- Milenium Main Logo -->
+                <a href="https://mileniumgasolineras.com/" target="_blank" class="group flex items-center transition-transform hover:scale-105" title="Ir al sitio web oficial de Milenium Gasolineras">
+                    <img src="https://i.ibb.co/yB6VkSvx/Logo-Milenium.png" 
+                         alt="Milenium Gasolineras Logo" 
+                         class="h-9 sm:h-12 w-auto object-contain"
+                         onerror="this.onerror=null; this.src='https://placehold.co/200x60/000000/ED5112?text=MILENIUM';">
+                </a>
+
+                <div class="hidden sm:block h-8 w-[1px] bg-milenium-black/60"></div>
+
+                <!-- Fuelsoft Badge Logo -->
+                <div class="hidden sm:flex items-center gap-2.5 px-3 py-1.5 rounded-lg bg-milenium-black border border-milenium-orange/30">
+                    <img src="https://i.ibb.co/DctNxsV/Chat-GPT-Image-27-jul-2026-10-41-04.png" 
+                         alt="Fuelsoft System Sync" 
+                         class="h-7 w-auto object-contain rounded"
+                         onerror="this.onerror=null; this.src='https://placehold.co/80x40/ED5112/ffffff?text=FUELSOFT';">
+                    <span class="text-xs font-bold text-milenium-orange tracking-wider uppercase">System Sync</span>
+                </div>
+            </div>
+
+            <!-- Live Clock & Connectivity Status -->
+            <div class="hidden lg:flex items-center gap-6">
+                <div class="text-right">
+                    <div id="liveClock" class="font-display font-bold text-lg text-white tracking-wide">00:00:00</div>
+                    <div id="liveDate" class="text-xs text-milenium-lightGray font-medium">Cargando fecha...</div>
+                </div>
+
+                <div class="flex items-center gap-2 px-3 py-1.5 rounded-md bg-milenium-orange/10 border border-milenium-orange/40 text-milenium-orange text-xs font-bold">
+                    <span class="relative flex h-2.5 w-2.5">
+                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-milenium-orange opacity-75"></span>
+                      <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-milenium-orange"></span>
+                    </span>
+                    Módulo de Conectividad Activo
+                </div>
+            </div>
+
+            <!-- Quick Action Tools Header -->
+            <div class="flex items-center gap-2 sm:gap-3">
+
+                <button onclick="openAllTabs()" 
+                        class="bg-milenium-orange hover:bg-milenium-orangeDark text-white font-extrabold px-3 py-2 sm:px-3.5 sm:py-2 rounded-lg text-xs sm:text-sm flex items-center gap-2 shadow-sm transition-all"
+                        title="Abrir todos los accesos en pestañas nuevas">
+                    <i class="fa-solid fa-up-right-from-square"></i>
+                    <span class="hidden sm:inline">Abrir Todos</span>
+                </button>
+
+                <button onclick="toggleStationContactsModal()" 
+                        class="bg-milenium-black hover:bg-milenium-darkGray border border-milenium-orange/40 text-white font-bold px-3 py-2 sm:px-3.5 sm:py-2 rounded-lg text-xs sm:text-sm flex items-center gap-2 shadow-sm transition-all"
+                        title="Directorio de Contacto Estaciones">
+                    <i class="fa-solid fa-address-book text-milenium-orange"></i>
+                    <span class="hidden sm:inline">Contactos</span>
+                </button>
+
+                <button onclick="copyAllLinks()" 
+                        class="p-2 sm:p-2.5 rounded-lg bg-milenium-black border border-milenium-darkGray text-milenium-lightGray hover:text-milenium-orange hover:border-milenium-orange/50 transition-all"
+                        title="Copiar todos los enlaces de acceso">
+                    <i class="fa-regular fa-copy"></i>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 flex-grow w-full">
+        
+        <!-- Hero Header -->
+        <div class="text-center max-w-3xl mx-auto mb-8 sm:mb-10">
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-milenium-darkGray border border-milenium-orange/40 text-milenium-orange text-xs sm:text-sm font-semibold mb-3 sm:mb-4">
+                <i class="fa-solid fa-gas-pump"></i>
+                <span>Portal Oficial de Gestión de Estaciones</span>
+            </div>
+            
+            <h1 class="font-display text-4xl sm:text-6xl md:text-7xl font-black text-white tracking-tight leading-none mb-3 uppercase">
+                FUELSOFT
+            </h1>
+            
+            <p class="text-milenium-lightGray text-xs sm:text-base leading-relaxed max-w-2xl mx-auto">
+                Plataforma centralizada para el acceso directo a los sistemas web de administración y control de estaciones <strong class="text-milenium-orange font-bold">Milenium Gasolineras</strong> mediante nuestro Módulo de Conectividad Segura.
+            </p>
+        </div>
+
+        <!-- Search Bar and Quick Stats Filter -->
+        <div class="bg-milenium-darkGray rounded-xl p-3.5 sm:p-5 mb-8 max-w-4xl mx-auto border border-milenium-orange/20 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-md">
+            
+            <!-- Search Input -->
+            <div class="relative w-full sm:w-96">
+                <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-milenium-lightGray text-sm"></i>
+                <input type="text" 
+                       id="searchInput" 
+                       oninput="filterAccessCards()"
+                       placeholder="Buscar estación o módulo (ej: Reynosa)..." 
+                       class="w-full bg-milenium-black border border-milenium-darkGray rounded-lg pl-10 pr-4 py-2.5 text-xs sm:text-sm text-white placeholder-milenium-lightGray/60 focus:outline-none focus:border-milenium-orange transition-all">
+            </div>
+
+            <!-- Quick Metrics / Filter Badges -->
+            <div class="flex items-center justify-between sm:justify-end w-full sm:w-auto gap-4 text-xs font-semibold text-milenium-lightGray">
+                <div class="flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-milenium-orange animate-pulse"></span>
+                    <span>Módulos Activos: <strong id="totalCount" class="text-milenium-orange font-bold">5</strong></span>
+                </div>
+                <div class="h-4 w-[1px] bg-milenium-black"></div>
+                <div class="flex items-center gap-2 text-milenium-orange">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span>Conexión Interna Protegida</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- BUTTONS / ACCESS CARDS GRID -->
+        <div id="cardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+
+            <!-- CARD 1: STO DOMINGO -->
+            <div class="station-card bg-milenium-darkGray border-t-4 border-t-milenium-orange border border-milenium-darkGray rounded-xl p-5 sm:p-6 flex flex-col justify-between shadow-lg" data-title="sto domingo santo domingo fuelsoft web">
+                <div>
+                    <!-- Card Top Header -->
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 rounded-xl bg-milenium-black border border-milenium-orange/40 flex items-center justify-center p-2.5 shadow-inner">
+                            <img src="https://i.ibb.co/S7JrwW01/icono-gasolinera-limpio.png" 
+                                 alt="Icono Gasolinera" 
+                                 class="w-full h-full object-contain"
+                                 onerror="this.onerror=null; this.src='https://placehold.co/40x40/ED5112/ffffff?text=GAS';">
+                        </div>
+                        <span class="bg-milenium-orange/10 text-milenium-orange border border-milenium-orange/30 text-[11px] font-bold px-3 py-1 rounded-full flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-milenium-orange"></span>
+                            Operativo
+                        </span>
+                    </div>
+
+                    <!-- Title & Domain Description -->
+                    <h2 class="font-display text-xl font-extrabold text-white mb-1">
+                        STO DOMINGO
+                    </h2>
+                    <p class="text-xs text-milenium-lightGray mb-4 line-clamp-1">
+                        Estación Santo Domingo - Portal FuelsoftWEB
+                    </p>
+
+                    <!-- URL Display Box -->
+                    <div class="bg-milenium-black rounded-lg p-2.5 border border-milenium-darkGray mb-5 flex items-center justify-between gap-2">
+                        <span class="text-[11px] font-mono text-milenium-orange truncate">
+                            mgstodomingo.eu1.netbird.services
+                        </span>
+                        <button onclick="copyToClipboard('https://mgstodomingo.eu1.netbird.services/FuelsoftWEB/', 'Santo Domingo')" 
+                                class="text-milenium-lightGray hover:text-milenium-orange transition-colors p-1" title="Copiar enlace">
+                            <i class="fa-regular fa-copy"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Action Buttons Footer -->
+                <div class="space-y-2 pt-3 border-t border-milenium-black">
+                    <div class="flex items-center gap-2">
+                        <button onclick="openEmbeddedBrowser('https://mgstodomingo.eu1.netbird.services/FuelsoftWEB/', 'STO DOMINGO')" 
+                                class="bg-milenium-orange hover:bg-milenium-orangeDark text-white flex-grow py-3 px-4 rounded-lg font-bold text-xs sm:text-sm text-center flex items-center justify-center gap-2 shadow-sm transition-all">
+                            <i class="fa-solid fa-window-maximize"></i>
+                            <span>Ingresar a Sto Domingo</span>
+                        </button>
+                        <button onclick="showQrModal('https://mgstodomingo.eu1.netbird.services/FuelsoftWEB/', 'STO DOMINGO')" 
+                                class="p-3 rounded-lg bg-milenium-black border border-milenium-darkGray text-milenium-lightGray hover:text-milenium-orange hover:border-milenium-orange/40" title="Generar código QR">
+                            <i class="fa-solid fa-qrcode"></i>
+                        </button>
+                    </div>
+                    
+                    <a href="https://mgstodomingo.eu1.netbird.services/FuelsoftWEB/" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="w-full bg-milenium-black hover:bg-milenium-darkGray text-milenium-lightGray hover:text-white py-2 px-3 rounded-lg font-medium text-[11px] text-center block transition-all border border-milenium-darkGray">
+                        <i class="fa-solid fa-arrow-up-right-from-square text-[10px] mr-1 text-milenium-orange"></i>
+                        Abrir en pestaña nueva externa
+                    </a>
+                </div>
+            </div>
+
+            <!-- CARD 2: COSMOPOLIS -->
+            <div class="station-card bg-milenium-darkGray border-t-4 border-t-milenium-orange border border-milenium-darkGray rounded-xl p-5 sm:p-6 flex flex-col justify-between shadow-lg" data-title="cosmopolis fuelsoft web login">
+                <div>
+                    <!-- Card Top Header -->
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 rounded-xl bg-milenium-black border border-milenium-orange/40 flex items-center justify-center p-2.5 shadow-inner">
+                            <img src="https://i.ibb.co/S7JrwW01/icono-gasolinera-limpio.png" 
+                                 alt="Icono Gasolinera" 
+                                 class="w-full h-full object-contain"
+                                 onerror="this.onerror=null; this.src='https://placehold.co/40x40/ED5112/ffffff?text=GAS';">
+                        </div>
+                        <span class="bg-milenium-orange/10 text-milenium-orange border border-milenium-orange/30 text-[11px] font-bold px-3 py-1 rounded-full flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-milenium-orange"></span>
+                            Operativo
+                        </span>
+                    </div>
+
+                    <!-- Title & Domain Description -->
+                    <h2 class="font-display text-xl font-extrabold text-white mb-1">
+                        COSMOPOLIS
+                    </h2>
+                    <p class="text-xs text-milenium-lightGray mb-4 line-clamp-1">
+                        Estación Cosmópolis - FuelsoftWEB Login
+                    </p>
+
+                    <!-- URL Display Box -->
+                    <div class="bg-milenium-black rounded-lg p-2.5 border border-milenium-darkGray mb-5 flex items-center justify-between gap-2">
+                        <span class="text-[11px] font-mono text-milenium-orange truncate">
+                            mg-cosmopolis.eu1.netbird.services
+                        </span>
+                        <button onclick="copyToClipboard('https://mg-cosmopolis.eu1.netbird.services/FuelsoftWEB/login', 'Cosmópolis')" 
+                                class="text-milenium-lightGray hover:text-milenium-orange transition-colors p-1" title="Copiar enlace">
+                            <i class="fa-regular fa-copy"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Action Buttons Footer -->
+                <div class="space-y-2 pt-3 border-t border-milenium-black">
+                    <div class="flex items-center gap-2">
+                        <button onclick="openEmbeddedBrowser('https://mg-cosmopolis.eu1.netbird.services/FuelsoftWEB/login', 'COSMOPOLIS')" 
+                                class="bg-milenium-orange hover:bg-milenium-orangeDark text-white flex-grow py-3 px-4 rounded-lg font-bold text-xs sm:text-sm text-center flex items-center justify-center gap-2 shadow-sm transition-all">
+                            <i class="fa-solid fa-window-maximize"></i>
+                            <span>Ingresar a Cosmópolis</span>
+                        </button>
+                        <button onclick="showQrModal('https://mg-cosmopolis.eu1.netbird.services/FuelsoftWEB/login', 'COSMOPOLIS')" 
+                                class="p-3 rounded-lg bg-milenium-black border border-milenium-darkGray text-milenium-lightGray hover:text-milenium-orange hover:border-milenium-orange/40" title="Generar código QR">
+                            <i class="fa-solid fa-qrcode"></i>
+                        </button>
+                    </div>
+                    
+                    <a href="https://mg-cosmopolis.eu1.netbird.services/FuelsoftWEB/login" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="w-full bg-milenium-black hover:bg-milenium-darkGray text-milenium-lightGray hover:text-white py-2 px-3 rounded-lg font-medium text-[11px] text-center block transition-all border border-milenium-darkGray">
+                        <i class="fa-solid fa-arrow-up-right-from-square text-[10px] mr-1 text-milenium-orange"></i>
+                        Abrir en pestaña nueva externa
+                    </a>
+                </div>
+            </div>
+
+            <!-- CARD 3: REYNOSA -->
+            <div class="station-card bg-milenium-darkGray border-t-4 border-t-milenium-orange border border-milenium-darkGray rounded-xl p-5 sm:p-6 flex flex-col justify-between shadow-lg" data-title="reynosa fuelsoft web login">
+                <div>
+                    <!-- Card Top Header -->
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 rounded-xl bg-milenium-black border border-milenium-orange/40 flex items-center justify-center p-2.5 shadow-inner">
+                            <img src="https://i.ibb.co/S7JrwW01/icono-gasolinera-limpio.png" 
+                                 alt="Icono Gasolinera" 
+                                 class="w-full h-full object-contain"
+                                 onerror="this.onerror=null; this.src='https://placehold.co/40x40/ED5112/ffffff?text=GAS';">
+                        </div>
+                        <span class="bg-milenium-orange/10 text-milenium-orange border border-milenium-orange/30 text-[11px] font-bold px-3 py-1 rounded-full flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-milenium-orange"></span>
+                            Operativo
+                        </span>
+                    </div>
+
+                    <!-- Title & Domain Description -->
+                    <h2 class="font-display text-xl font-extrabold text-white mb-1">
+                        REYNOSA
+                    </h2>
+                    <p class="text-xs text-milenium-lightGray mb-4 line-clamp-1">
+                        Estación Reynosa - FuelsoftWEB Login
+                    </p>
+
+                    <!-- URL Display Box -->
+                    <div class="bg-milenium-black rounded-lg p-2.5 border border-milenium-darkGray mb-5 flex items-center justify-between gap-2">
+                        <span class="text-[11px] font-mono text-milenium-orange truncate">
+                            mg-reynosa.eu1.netbird.services
+                        </span>
+                        <button onclick="copyToClipboard('https://mg-reynosa.eu1.netbird.services/FuelsoftWEB/login', 'Reynosa')" 
+                                class="text-milenium-lightGray hover:text-milenium-orange transition-colors p-1" title="Copiar enlace">
+                            <i class="fa-regular fa-copy"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Action Buttons Footer -->
+                <div class="space-y-2 pt-3 border-t border-milenium-black">
+                    <div class="flex items-center gap-2">
+                        <button onclick="openEmbeddedBrowser('https://mg-reynosa.eu1.netbird.services/FuelsoftWEB/login', 'REYNOSA')" 
+                                class="bg-milenium-orange hover:bg-milenium-orangeDark text-white flex-grow py-3 px-4 rounded-lg font-bold text-xs sm:text-sm text-center flex items-center justify-center gap-2 shadow-sm transition-all">
+                            <i class="fa-solid fa-window-maximize"></i>
+                            <span>Ingresar a Reynosa</span>
+                        </button>
+                        <button onclick="showQrModal('https://mg-reynosa.eu1.netbird.services/FuelsoftWEB/login', 'REYNOSA')" 
+                                class="p-3 rounded-lg bg-milenium-black border border-milenium-darkGray text-milenium-lightGray hover:text-milenium-orange hover:border-milenium-orange/40" title="Generar código QR">
+                            <i class="fa-solid fa-qrcode"></i>
+                        </button>
+                    </div>
+                    
+                    <a href="https://mg-reynosa.eu1.netbird.services/FuelsoftWEB/login" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="w-full bg-milenium-black hover:bg-milenium-darkGray text-milenium-lightGray hover:text-white py-2 px-3 rounded-lg font-medium text-[11px] text-center block transition-all border border-milenium-darkGray">
+                        <i class="fa-solid fa-arrow-up-right-from-square text-[10px] mr-1 text-milenium-orange"></i>
+                        Abrir en pestaña nueva externa
+                    </a>
+                </div>
+            </div>
+
+            <!-- CARD 4: GUADALUPE -->
+            <div class="station-card bg-milenium-darkGray border-t-4 border-t-milenium-orange border border-milenium-darkGray rounded-xl p-5 sm:p-6 flex flex-col justify-between shadow-lg" data-title="guadalupe fuelsoft web login">
+                <div>
+                    <!-- Card Top Header -->
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 rounded-xl bg-milenium-black border border-milenium-orange/40 flex items-center justify-center p-2.5 shadow-inner">
+                            <img src="https://i.ibb.co/S7JrwW01/icono-gasolinera-limpio.png" 
+                                 alt="Icono Gasolinera" 
+                                 class="w-full h-full object-contain"
+                                 onerror="this.onerror=null; this.src='https://placehold.co/40x40/ED5112/ffffff?text=GAS';">
+                        </div>
+                        <span class="bg-milenium-orange/10 text-milenium-orange border border-milenium-orange/30 text-[11px] font-bold px-3 py-1 rounded-full flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-milenium-orange"></span>
+                            Operativo
+                        </span>
+                    </div>
+
+                    <!-- Title & Domain Description -->
+                    <h2 class="font-display text-xl font-extrabold text-white mb-1">
+                        GUADALUPE
+                    </h2>
+                    <p class="text-xs text-milenium-lightGray mb-4 line-clamp-1">
+                        Estación Guadalupe - FuelsoftWEB Login
+                    </p>
+
+                    <!-- URL Display Box -->
+                    <div class="bg-milenium-black rounded-lg p-2.5 border border-milenium-darkGray mb-5 flex items-center justify-between gap-2">
+                        <span class="text-[11px] font-mono text-milenium-orange truncate">
+                            mg-guadalupe.eu1.netbird.services
+                        </span>
+                        <button onclick="copyToClipboard('https://mg-guadalupe.eu1.netbird.services/FuelsoftWEB/login', 'Guadalupe')" 
+                                class="text-milenium-lightGray hover:text-milenium-orange transition-colors p-1" title="Copiar enlace">
+                            <i class="fa-regular fa-copy"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Action Buttons Footer -->
+                <div class="space-y-2 pt-3 border-t border-milenium-black">
+                    <div class="flex items-center gap-2">
+                        <button onclick="openEmbeddedBrowser('https://mg-guadalupe.eu1.netbird.services/FuelsoftWEB/login', 'GUADALUPE')" 
+                                class="bg-milenium-orange hover:bg-milenium-orangeDark text-white flex-grow py-3 px-4 rounded-lg font-bold text-xs sm:text-sm text-center flex items-center justify-center gap-2 shadow-sm transition-all">
+                            <i class="fa-solid fa-window-maximize"></i>
+                            <span>Ingresar a Guadalupe</span>
+                        </button>
+                        <button onclick="showQrModal('https://mg-guadalupe.eu1.netbird.services/FuelsoftWEB/login', 'GUADALUPE')" 
+                                class="p-3 rounded-lg bg-milenium-black border border-milenium-darkGray text-milenium-lightGray hover:text-milenium-orange hover:border-milenium-orange/40" title="Generar código QR">
+                            <i class="fa-solid fa-qrcode"></i>
+                        </button>
+                    </div>
+                    
+                    <a href="https://mg-guadalupe.eu1.netbird.services/FuelsoftWEB/login" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="w-full bg-milenium-black hover:bg-milenium-darkGray text-milenium-lightGray hover:text-white py-2 px-3 rounded-lg font-medium text-[11px] text-center block transition-all border border-milenium-darkGray">
+                        <i class="fa-solid fa-arrow-up-right-from-square text-[10px] mr-1 text-milenium-orange"></i>
+                        Abrir en pestaña nueva externa
+                    </a>
+                </div>
+            </div>
+
+            <!-- CARD 5: FLOTILLERO -->
+            <div class="station-card bg-milenium-darkGray border-t-4 border-t-milenium-orange border border-milenium-darkGray rounded-xl p-5 sm:p-6 flex flex-col justify-between md:col-span-2 lg:col-span-1 shadow-lg" data-title="flotillero milenium gasolineras crédito flota fuelsoft">
+                <div>
+                    <!-- Card Top Header -->
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 rounded-xl bg-milenium-black border border-milenium-orange/40 flex items-center justify-center p-2.5 shadow-inner">
+                            <img src="https://i.ibb.co/S7JrwW01/icono-gasolinera-limpio.png" 
+                                 alt="Icono Gasolinera" 
+                                 class="w-full h-full object-contain"
+                                 onerror="this.onerror=null; this.src='https://placehold.co/40x40/ED5112/ffffff?text=GAS';">
+                        </div>
+                        <span class="bg-milenium-orange/10 text-milenium-orange border border-milenium-orange/30 text-[11px] font-bold px-3 py-1 rounded-full flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-milenium-orange"></span>
+                            Sistema Flotillas
+                        </span>
+                    </div>
+
+                    <!-- Title & Domain Description -->
+                    <h2 class="font-display text-xl font-extrabold text-white mb-1">
+                        FLOTILLERO
+                    </h2>
+                    <p class="text-xs text-milenium-lightGray mb-4 line-clamp-1">
+                        Control de Crédito e Indicadores de Flotilla
+                    </p>
+
+                    <!-- URL Display Box -->
+                    <div class="bg-milenium-black rounded-lg p-2.5 border border-milenium-darkGray mb-5 flex items-center justify-between gap-2">
+                        <span class="text-[11px] font-mono text-milenium-orange truncate">
+                            mileniumgasolineras.eu1.netbird.services
+                        </span>
+                        <button onclick="copyToClipboard('https://mileniumgasolineras.eu1.netbird.services/#/', 'Flotillero')" 
+                                class="text-milenium-lightGray hover:text-milenium-orange transition-colors p-1" title="Copiar enlace">
+                            <i class="fa-regular fa-copy"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Action Buttons Footer -->
+                <div class="space-y-2 pt-3 border-t border-milenium-black">
+                    <div class="flex items-center gap-2">
+                        <button onclick="openEmbeddedBrowser('https://mileniumgasolineras.eu1.netbird.services/#/', 'FLOTILLERO')" 
+                                class="bg-milenium-orange hover:bg-milenium-orangeDark text-white flex-grow py-3 px-4 rounded-lg font-extrabold text-xs sm:text-sm text-center flex items-center justify-center gap-2 shadow-sm transition-all">
+                            <i class="fa-solid fa-window-maximize"></i>
+                            <span>Ingresar a Flotillero</span>
+                        </button>
+                        <button onclick="showQrModal('https://mileniumgasolineras.eu1.netbird.services/#/', 'FLOTILLERO')" 
+                                class="p-3 rounded-lg bg-milenium-black border border-milenium-darkGray text-milenium-lightGray hover:text-milenium-orange hover:border-milenium-orange/40" title="Generar código QR">
+                            <i class="fa-solid fa-qrcode"></i>
+                        </button>
+                    </div>
+
+                    <a href="https://mileniumgasolineras.eu1.netbird.services/#/" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="w-full bg-milenium-black hover:bg-milenium-darkGray text-milenium-lightGray hover:text-white py-2 px-3 rounded-lg font-medium text-[11px] text-center block transition-all border border-milenium-darkGray">
+                        <i class="fa-solid fa-arrow-up-right-from-square text-[10px] mr-1 text-milenium-orange"></i>
+                        Abrir en pestaña nueva externa
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- CONNECTIVITY HELP BANNER -->
+        <div class="mt-10 sm:mt-12 bg-milenium-darkGray rounded-xl p-5 sm:p-6 border-l-4 border-milenium-orange border border-milenium-darkGray flex flex-col md:flex-row items-center justify-between gap-5 shadow-lg">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-xl bg-milenium-black border border-milenium-darkGray flex items-center justify-center text-milenium-orange text-2xl shrink-0">
+                    <i class="fa-solid fa-network-wired"></i>
+                </div>
+                <div>
+                    <h3 class="font-display text-base sm:text-lg font-bold text-white mb-0.5">
+                        ¿Requieres asistencia para el acceso a las estaciones?
+                    </h3>
+                    <p class="text-xs sm:text-sm text-milenium-lightGray">
+                        Para ingresar a los enlaces de Fuelsoft, verifica que tu equipo cuente con el <strong class="text-milenium-orange font-semibold">Módulo de Conectividad Segura</strong> habilitado.
+                    </p>
+                </div>
+            </div>
+            
+            <!-- WhatsApp Direct Action Button -->
+            <a href="https://wa.me/528119108379" 
+               target="_blank" 
+               rel="noopener noreferrer"
+               class="bg-[#25D366] hover:bg-[#20BA5A] text-white px-5 py-3 rounded-xl text-xs sm:text-sm font-extrabold shrink-0 flex items-center gap-2.5 transition-all shadow-md hover:shadow-emerald-900/40 w-full sm:w-auto justify-center">
+                <i class="fa-brands fa-whatsapp text-lg"></i>
+                <span>Contacto WhatsApp (+52 81 1910 8379)</span>
+            </a>
+        </div>
+
+    </main>
+
+    <!-- EMBEDDED BROWSER MODAL (Navegador Embebido Integrado) -->
+    <div id="embeddedBrowserModal" class="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/90 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-milenium-darkGray rounded-2xl border border-milenium-orange/40 w-full max-w-6xl h-[90vh] flex flex-col shadow-2xl relative overflow-hidden transform scale-95 transition-transform duration-300" id="browserModalContent">
+            
+            <!-- Embedded Browser Navigation Bar -->
+            <div class="bg-milenium-black px-4 py-3 border-b border-milenium-darkGray flex flex-wrap items-center justify-between gap-3 shrink-0">
+                
+                <!-- Left Browser Info & Title -->
+                <div class="flex items-center gap-3 min-w-0">
+                    <div class="w-8 h-8 rounded-lg bg-milenium-darkGray border border-milenium-orange/30 p-1.5 flex items-center justify-center shrink-0">
+                        <img src="https://i.ibb.co/S7JrwW01/icono-gasolinera-limpio.png" alt="Icono Station" class="w-full h-full object-contain">
+                    </div>
+                    <div class="min-w-0">
+                        <h4 id="browserModalTitle" class="font-display font-extrabold text-sm text-white truncate">Navegador Embebido</h4>
+                        <p id="browserModalUrlDisplay" class="text-[11px] font-mono text-milenium-orange truncate">https://...</p>
+                    </div>
+                </div>
+
+                <!-- Center/Right Browser Tools -->
+                <div class="flex items-center gap-2 shrink-0">
+                    <button onclick="reloadBrowserIframe()" 
+                            class="p-2 rounded-lg bg-milenium-darkGray hover:bg-milenium-orange text-white text-xs flex items-center gap-1.5 transition-colors" 
+                            title="Recargar página">
+                        <i class="fa-solid fa-rotate-right"></i>
+                        <span class="hidden md:inline text-[11px]">Recargar</span>
+                    </button>
+
+                    <a id="browserExternalLinkBtn" 
+                       href="#" 
+                       target="_blank" 
+                       rel="noopener noreferrer"
+                       class="p-2 rounded-lg bg-milenium-orange hover:bg-milenium-orangeDark text-white text-xs font-bold flex items-center gap-1.5 transition-colors" 
+                       title="Abrir en ventana externa nueva">
+                        <i class="fa-solid fa-up-right-from-square"></i>
+                        <span class="hidden sm:inline text-[11px]">Pestaña Nueva</span>
+                    </a>
+
+                    <button onclick="closeEmbeddedBrowser()" 
+                            class="p-2 rounded-lg bg-red-600/80 hover:bg-red-600 text-white text-xs font-bold transition-colors ml-1" 
+                            title="Cerrar navegador">
+                        <i class="fa-solid fa-xmark text-sm"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Security Notice Banner inside modal -->
+            <div class="bg-milenium-darkGray border-b border-milenium-black px-4 py-1.5 text-[11px] text-milenium-lightGray flex items-center justify-between gap-2 shrink-0">
+                <span class="truncate">
+                    <i class="fa-solid fa-circle-info text-milenium-orange mr-1"></i>
+                    Si el módulo de la estación limita la carga dentro de marcos (X-Frame-Options), presiona <strong>Pestaña Nueva</strong>.
+                </span>
+                <span class="hidden sm:inline-block text-[10px] text-milenium-orange font-mono">Modo Embebido Seguro</span>
+            </div>
+
+            <!-- Iframe Container -->
+            <div class="relative flex-grow bg-white w-full overflow-hidden">
+                <!-- Loading Overlay -->
+                <div id="iframeLoader" class="absolute inset-0 bg-milenium-black flex flex-col items-center justify-center gap-3 z-10">
+                    <div class="w-10 h-10 border-4 border-milenium-orange border-t-transparent rounded-full animate-spin"></div>
+                    <p class="text-xs font-bold text-milenium-lightGray">Cargando Módulo de la Estación...</p>
+                </div>
+                <iframe id="browserIframe" 
+                        src="about:blank" 
+                        class="w-full h-full border-0" 
+                        onload="if(typeof hideIframeLoader === 'function') hideIframeLoader()"
+                        allow="fullscreen; clipboard-read; clipboard-write"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- DIRECTORY MODAL -->
+    <div id="contactsModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-milenium-darkGray rounded-2xl p-5 sm:p-8 max-w-2xl w-full border border-milenium-orange/30 shadow-2xl relative transform scale-95 transition-transform duration-300" id="contactsModalContent">
+            
+            <button onclick="toggleStationContactsModal()" class="absolute top-5 right-5 text-milenium-lightGray hover:text-white p-2">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+
+            <div class="flex items-center gap-3 mb-6 border-b border-milenium-black pb-4">
+                <div class="w-10 h-10 rounded-lg bg-milenium-black border border-milenium-orange/30 text-milenium-orange flex items-center justify-center text-lg font-bold">
+                    <i class="fa-solid fa-address-book"></i>
+                </div>
+                <div>
+                    <h3 class="font-display text-xl font-extrabold text-white">Directorio Estaciones Milenium</h3>
+                    <p class="text-xs text-milenium-lightGray">Atención y Soporte Telefónico / WhatsApp</p>
+                </div>
+            </div>
+
+            <div class="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
+                
+                <!-- Guadalupe -->
+                <div class="bg-milenium-black p-4 rounded-xl border border-milenium-darkGray flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                        <div class="font-bold text-white text-sm">Estación Guadalupe</div>
+                        <div class="text-xs text-milenium-lightGray">guadalupe10834@mileniumgasolineras.com</div>
+                    </div>
+                    <a href="https://wa.me/528110423672" target="_blank" class="text-xs font-bold text-[#25D366] hover:underline flex items-center gap-2">
+                        <i class="fa-brands fa-whatsapp text-sm"></i>
+                        81 1042 3672
+                    </a>
+                </div>
+
+                <!-- Santo Domingo -->
+                <div class="bg-milenium-black p-4 rounded-xl border border-milenium-darkGray flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                        <div class="font-bold text-white text-sm">Estación Santo Domingo</div>
+                        <div class="text-xs text-milenium-lightGray">gerente08340@mileniumgasolineras.com</div>
+                    </div>
+                    <a href="https://wa.me/528126225378" target="_blank" class="text-xs font-bold text-[#25D366] hover:underline flex items-center gap-2">
+                        <i class="fa-brands fa-whatsapp text-sm"></i>
+                        81 2622 5378
+                    </a>
+                </div>
+
+                <!-- Cosmopolis -->
+                <div class="bg-milenium-black p-4 rounded-xl border border-milenium-darkGray flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                        <div class="font-bold text-white text-sm">Estación Cosmópolis</div>
+                        <div class="text-xs text-milenium-lightGray">administracion09578@mileniumgasolineras.com</div>
+                    </div>
+                    <a href="https://wa.me/528118248100" target="_blank" class="text-xs font-bold text-[#25D366] hover:underline flex items-center gap-2">
+                        <i class="fa-brands fa-whatsapp text-sm"></i>
+                        81 1824 8100
+                    </a>
+                </div>
+
+                <!-- Reynosa -->
+                <div class="bg-milenium-black p-4 rounded-xl border border-milenium-darkGray flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                        <div class="font-bold text-white text-sm">Estación Reynosa</div>
+                        <div class="text-xs text-milenium-lightGray">administracion10388@mileniumgasolineras.com</div>
+                    </div>
+                    <a href="https://wa.me/528111665166" target="_blank" class="text-xs font-bold text-[#25D366] hover:underline flex items-center gap-2">
+                        <i class="fa-brands fa-whatsapp text-sm"></i>
+                        811 166 5166
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- QR MODAL -->
+    <div id="qrModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-milenium-darkGray rounded-2xl p-6 sm:p-8 max-w-sm w-full border border-milenium-orange/30 text-center relative transform scale-95 transition-transform duration-300 shadow-2xl" id="qrModalContent">
+            
+            <button onclick="closeQrModal()" class="absolute top-4 right-4 text-milenium-lightGray hover:text-white p-2">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+
+            <h3 id="qrModalTitle" class="font-display text-lg font-bold text-white mb-1">Código QR</h3>
+            <p class="text-xs text-milenium-lightGray mb-6">Escanea para acceder desde tu dispositivo móvil</p>
+
+            <div class="bg-white p-4 rounded-xl inline-block shadow-lg border border-milenium-lightGray mb-4" id="qrcode"></div>
+
+            <div class="text-[11px] font-mono text-milenium-orange break-all bg-milenium-black p-2.5 rounded-lg border border-milenium-darkGray" id="qrModalUrl"></div>
+        </div>
+    </div>
+
+    <!-- Floating WhatsApp Quick Button for Mobile & Desktop -->
+    <a href="https://wa.me/528119108379" 
+       target="_blank" 
+       rel="noopener noreferrer"
+       class="fixed bottom-6 left-6 z-40 bg-[#25D366] hover:bg-[#20BA5A] text-white p-3.5 rounded-full shadow-2xl flex items-center gap-2.5 transition-all hover:scale-110 group border-2 border-white/20"
+       title="Contactar por WhatsApp">
+        <i class="fa-brands fa-whatsapp text-2xl"></i>
+        <span class="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-300 ease-in-out whitespace-nowrap text-xs font-bold pr-1">
+            WhatsApp Directo
+        </span>
+    </a>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-milenium-darkGray border border-milenium-orange text-white px-5 py-3 rounded-xl shadow-2xl translate-y-20 opacity-0 transition-all duration-300">
+        <i class="fa-solid fa-circle-check text-milenium-orange text-lg"></i>
+        <span id="toastMessage" class="text-xs sm:text-sm font-medium">Notificación</span>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="py-6 px-4 border-t border-milenium-darkGray bg-milenium-darkGray mt-12 relative z-10">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-milenium-lightGray">
+            <div class="flex items-center gap-3">
+                <img src="https://i.ibb.co/yB6VkSvx/Logo-Milenium.png" alt="Milenium Logo" class="h-6 w-auto opacity-80">
+                <span>© 2026 Milenium Gasolineras. Todos los derechos reservados.</span>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <span class="font-semibold text-white">Fuelsoft System Sync</span>
+                <span class="inline-block w-1.5 h-1.5 rounded-full bg-milenium-orange"></span>
+                <span class="text-milenium-lightGray">Optimizado para Vercel</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- CLIENT JAVASCRIPT LOGIC -->
+    <script>
+        // Live Clock Implementation
+        function updateClock() {
+            const now = new Date();
+            const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+            const dateOptions = { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' };
+            
+            document.getElementById('liveClock').textContent = now.toLocaleTimeString('es-MX', timeOptions);
+            document.getElementById('liveDate').textContent = now.toLocaleDateString('es-MX', dateOptions);
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Search Filter Logic
+        function filterAccessCards() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            const cards = document.querySelectorAll('#cardsGrid > div');
+            let visibleCount = 0;
+
+            cards.forEach(card => {
+                const searchData = card.getAttribute('data-title') || '';
+                if (searchData.includes(query)) {
+                    card.style.display = 'flex';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            document.getElementById('totalCount').textContent = visibleCount;
+        }
+
+        // Copy Single URL to Clipboard
+        function copyToClipboard(text, name) {
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text);
+            } else {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+            }
+            showToast(`Enlace de ${name} copiado al portapapeles`);
+        }
+
+        // Copy All Access Links
+        function copyAllLinks() {
+            const links = [
+                'STO DOMINGO: https://mgstodomingo.eu1.netbird.services/FuelsoftWEB/',
+                'COSMOPOLIS: https://mg-cosmopolis.eu1.netbird.services/FuelsoftWEB/login',
+                'REYNOSA: https://mg-reynosa.eu1.netbird.services/FuelsoftWEB/login',
+                'GUADALUPE: https://mg-guadalupe.eu1.netbird.services/FuelsoftWEB/login',
+                'FLOTILLERO: https://mileniumgasolineras.eu1.netbird.services/#/'
+            ].join('\n');
+
+            const textarea = document.createElement('textarea');
+            textarea.value = links;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+
+            showToast('Todos los accesos de Fuelsoft copiado');
+        }
+
+        // Open All Tabs
+        function openAllTabs() {
+            const urls = [
+                'https://mgstodomingo.eu1.netbird.services/FuelsoftWEB/',
+                'https://mg-cosmopolis.eu1.netbird.services/FuelsoftWEB/login',
+                'https://mg-reynosa.eu1.netbird.services/FuelsoftWEB/login',
+                'https://mg-guadalupe.eu1.netbird.services/FuelsoftWEB/login',
+                'https://mileniumgasolineras.eu1.netbird.services/#/'
+            ];
+
+            urls.forEach(url => window.open(url, '_blank'));
+            showToast('Abriendo 5 pestañas de Fuelsoft...');
+        }
+
+        // EMBEDDED BROWSER LOGIC
+        let currentEmbeddedUrl = '';
+        function openEmbeddedBrowser(url, stationName) {
+            currentEmbeddedUrl = url;
+            const modal = document.getElementById('embeddedBrowserModal');
+            const modalContent = document.getElementById('browserModalContent');
+            const iframe = document.getElementById('browserIframe');
+            const loader = document.getElementById('iframeLoader');
+            
+            document.getElementById('browserModalTitle').textContent = `Módulo Fuelsoft - Estación ${stationName}`;
+            document.getElementById('browserModalUrlDisplay').textContent = url;
+            document.getElementById('browserExternalLinkBtn').href = url;
+
+            loader.style.display = 'flex';
+            iframe.src = url;
+
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            modalContent.classList.remove('scale-95');
+            modalContent.classList.add('scale-100');
+        }
+
+        function closeEmbeddedBrowser() {
+            const modal = document.getElementById('embeddedBrowserModal');
+            const modalContent = document.getElementById('browserModalContent');
+            const iframe = document.getElementById('browserIframe');
+
+            modalContent.classList.remove('scale-100');
+            modalContent.classList.add('scale-95');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            
+            // Reset iframe source after animation
+            setTimeout(() => {
+                iframe.src = 'about:blank';
+            }, 300);
+        }
+
+        function reloadBrowserIframe() {
+            const iframe = document.getElementById('browserIframe');
+            const loader = document.getElementById('iframeLoader');
+            if (currentEmbeddedUrl) {
+                loader.style.display = 'flex';
+                iframe.src = currentEmbeddedUrl;
+            }
+        }
+
+        function hideIframeLoader() {
+            const loader = document.getElementById('iframeLoader');
+            if (loader) {
+                loader.style.display = 'none';
+            }
+        }
+
+        // QR Code Modal Handler
+        let qrcodeObj = null;
+        function showQrModal(url, name) {
+            const modal = document.getElementById('qrModal');
+            const modalContent = document.getElementById('qrModalContent');
+            const qrContainer = document.getElementById('qrcode');
+            
+            document.getElementById('qrModalTitle').textContent = `ACCESO ${name}`;
+            document.getElementById('qrModalUrl').textContent = url;
+
+            qrContainer.innerHTML = '';
+            qrcodeObj = new QRCode(qrContainer, {
+                text: url,
+                width: 180,
+                height: 180,
+                colorDark : "#000000",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H
+            });
+
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            modalContent.classList.remove('scale-95');
+            modalContent.classList.add('scale-100');
+        }
+
+        function closeQrModal() {
+            const modal = document.getElementById('qrModal');
+            const modalContent = document.getElementById('qrModalContent');
+            
+            modalContent.classList.remove('scale-100');
+            modalContent.classList.add('scale-95');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+        }
+
+        // Station Contacts Modal Handler
+        function toggleStationContactsModal() {
+            const modal = document.getElementById('contactsModal');
+            const modalContent = document.getElementById('contactsModalContent');
+
+            if (modal.classList.contains('opacity-0')) {
+                modal.classList.remove('opacity-0', 'pointer-events-none');
+                modalContent.classList.remove('scale-95');
+                modalContent.classList.add('scale-100');
+            } else {
+                modalContent.classList.remove('scale-100');
+                modalContent.classList.add('scale-95');
+                modal.classList.add('opacity-0', 'pointer-events-none');
+            }
+        }
+
+        // Toast Notification System
+        let toastTimeout;
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+
+            toastMessage.textContent = message;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        // Close Modals on ESC Key or Outside Click
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeQrModal();
+                closeEmbeddedBrowser();
+                const contactsModal = document.getElementById('contactsModal');
+                if (!contactsModal.classList.contains('opacity-0')) {
+                    toggleStationContactsModal();
+                }
+            }
+        });
+
+        document.getElementById('qrModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('qrModal')) {
+                closeQrModal();
+            }
+        });
+
+        document.getElementById('contactsModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('contactsModal')) {
+                toggleStationContactsModal();
+            }
+        });
+
+        document.getElementById('embeddedBrowserModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('embeddedBrowserModal')) {
+                closeEmbeddedBrowser();
+            }
+        });
+    </script>
+</body>
+</html>
